@@ -4,10 +4,13 @@ export class Task {
   priority: string;
   parentTask: string;
   startDate: Date;
-  endDate: string;
+  endDate: Date;
   userId: string;
+  projectId: string;
+  status: string;
   constructor() {
     this.priority = '10';
+    this.status='open';
    }
 
 }

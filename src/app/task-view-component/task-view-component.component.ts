@@ -11,6 +11,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../user-management-component/user';
 import { UserService } from '../user.service';
 import { SearchUser } from '../user-management-component/search-user';
+import { ProjectService } from '../project.service';
+import { Project } from '../project-management-component/project';
 
 
 @Component({
@@ -27,13 +29,18 @@ export class TaskViewComponentComponent implements OnInit {
   saveButton: string;
   taskName: string;
   searchTask: SearchTask;
+  searchProject: string;
   errorMessage: string;
   closeResult: string;
   users: Array<User>;
   user: User;
+  projects: Array<Project>;
+  project: Project;
+
   parentUser: User;
   addUserEnabled: boolean;
   userHandlerService: UserService;
+  projectHandlerService:  ProjectService;
   searchUser: SearchUser;
   searchParentTask: string;
   parentTasks: Array<Task>;
@@ -42,7 +49,8 @@ export class TaskViewComponentComponent implements OnInit {
     ceil: 30
   };
   constructor(userHandlerService: UserService, taskHandlerService: TaskService,
-              private route: ActivatedRoute,  private modalService: NgbModal, private router: Router) {
+              private route: ActivatedRoute,  private modalService: NgbModal,
+              projectHandlerService: ProjectService, private router: Router) {
     this.tasks = new Array<Task>();
     this.task = new Task();
     this.searchTask = new SearchTask();
@@ -51,6 +59,7 @@ export class TaskViewComponentComponent implements OnInit {
     this.taskHandlerService = taskHandlerService;
     this.saveButton = 'Add Task';
     this.userHandlerService = userHandlerService;
+    this.projectHandlerService = projectHandlerService;
     this.router = router;
    }
 
@@ -66,6 +75,7 @@ export class TaskViewComponentComponent implements OnInit {
     ).subscribe(selectedTask => {this.task = selectedTask; if (this.task) {this.saveButton = 'Update'} else {this.task=new Task();}});
     this.taskHandlerService.getAllTasks().subscribe(tasksList => this.tasks = tasksList);
     this.taskHandlerService.getAllTasks().subscribe(tasksList => this.parentTasks = tasksList);
+	this.projectHandlerService.getAllProjects().subscribe(projects => this.projects = projects);
   }
 
 
@@ -83,6 +93,22 @@ export class TaskViewComponentComponent implements OnInit {
                  .concat(this.users.filter(userEntry => this.searchUser.searchString === userEntry.lastName)
                    .concat(this.users.filter(userEntry => this.searchUser.searchString === userEntry.employeeId)));
   }
+
+
+  filterProjects() {
+    if (this.searchProject){
+      this.projectHandlerService.getAllProjects().subscribe(projectList => this.postFilterProject(projectList))
+    } else {
+      this.projectHandlerService.getAllProjects().subscribe(projectList => this.projects = projectList);
+    }
+  }
+
+  postFilterProject(projectList: Array<Project>){
+    this.projects = projectList;
+    this.projects = this.projects.filter(project => this.searchProject === project.project)
+                 
+  }
+
 
   filterParentTasks() {
     if (this.searchParentTask){
@@ -147,6 +173,11 @@ export class TaskViewComponentComponent implements OnInit {
    this.task.userId = user.id;
   }
 
+  
+  assignProject(project: Project) {
+   this.project = project;
+   this.task.projectId = project.id;
+  }
   assignParentTask(task: Task) {
     this.task.parentTask = task.task;
    }
@@ -204,7 +235,7 @@ export class TaskViewComponentComponent implements OnInit {
 
   }
 
-  open(content) {
+  open(content: any) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {

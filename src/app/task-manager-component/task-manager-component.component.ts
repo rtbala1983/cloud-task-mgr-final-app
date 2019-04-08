@@ -10,6 +10,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../user-management-component/user';
 import { UserService } from '../user.service';
 import { SearchUser } from '../user-management-component/search-user';
+import { ProjectService } from '../project.service';
+import { Project } from '../project-management-component/project';
+
 
 @Component({
   selector: 'app-task-manager-component',
@@ -34,18 +37,23 @@ export class TaskManagerComponentComponent implements OnInit {
   addUserEnabled: boolean;
   userHandlerService: UserService;
   searchUser: SearchUser;
+  projectHandlerService:  ProjectService;
+  projects: Array<Project>;
+  project: Project;
+  searchProject: string;
   options: Options = {
     floor: 0,
     ceil: 30
   };
   constructor(userHandlerService: UserService, taskHandlerService: TaskService,
-              private route: ActivatedRoute, private modalService: NgbModal) {
+              private route: ActivatedRoute,projectHandlerService: ProjectService, private modalService: NgbModal) {
     this.tasks = new Array<Task>();
     this.task = new Task();
     this.searchTask = new SearchTask();
     this.addTaskEnabled = false;
     this.taskHandlerService = taskHandlerService;
     this.userHandlerService = userHandlerService;
+    this.projectHandlerService = projectHandlerService;
    }
 
   ngOnInit() {
@@ -60,6 +68,20 @@ export class TaskManagerComponentComponent implements OnInit {
     }
   }
 
+  filterProjects() {
+    if (this.searchProject){
+      this.projectHandlerService.getAllProjects().subscribe(projectList => this.postFilterProject(projectList))
+    } else {
+      this.projectHandlerService.getAllProjects().subscribe(projectList => this.projects = projectList);
+    }
+  }
+
+  postFilterProject(projectList: Array<Project>){
+    this.projects = projectList;
+    console.log('search project' + this.searchProject +projectList[0].id);
+    this.projects = this.projects.filter(project => this.searchProject !== project.id)
+                 
+  }
   postFilterUser(userList: Array<User>){
     this.users = userList;
     this.users = this.users.filter(userEntry => this.searchUser.searchString === userEntry.firstName)
@@ -102,8 +124,26 @@ export class TaskManagerComponentComponent implements OnInit {
   }
 
   onClick(task: Task) {
-    this.taskHandlerService.deleteTask(task.task);
-    this.tasks = this.tasks.filter(taskEntry => task.id !== taskEntry.id);
+   // this.taskHandlerService.deleteTask(task.task);
+   task.status='completed';
+   this.taskHandlerService.updateTask(this.task); 
+   // this.tasks = this.tasks.filter(taskEntry => task.id !== taskEntry.id);
+  }
+
+  onSort(sortColumn: string) {
+    console.log('sort invoked'+ this.tasks.length);
+    
+    if (sortColumn === 'startDate'){
+      this.tasks = this.tasks.sort((task1, task2) => (new Date(task1.startDate)).getTime() - (new Date(task2.startDate)).getTime());
+
+    } else if (sortColumn === 'endDate') {
+      this.tasks = this.tasks.sort((task1, task2) =>  new Date(task1.endDate).getTime() -  new Date(task2.endDate).getTime());
+    } else if (sortColumn === 'priority') {
+      this.tasks = this.tasks.sort((task1, task2) => task1.priority.localeCompare(task2.priority));
+    }
+    else if (sortColumn === 'completed') {
+      this.tasks = this.tasks.sort((task1, task2) => task1.status===null?0:task2.status===null?0:task1.status.localeCompare(task2.status));
+    }
   }
 
   filterTasks() {
@@ -112,6 +152,9 @@ export class TaskManagerComponentComponent implements OnInit {
 
   postFilter(taskList: Array<Task>){
     this.tasks = taskList;
+    if (this.searchTask.project)  {
+      this.tasks = this.tasks.filter(taskEntry => this.searchTask.project === taskEntry.projectId);
+      }
     if (this.searchTask.task)  {
       this.tasks = this.tasks.filter(taskEntry => this.searchTask.task === taskEntry.task);
       }
@@ -129,10 +172,15 @@ export class TaskManagerComponentComponent implements OnInit {
       this.tasks = this.tasks.filter(taskEntry => this.searchTask.startDate <= taskEntry.startDate);
     }
     if (this.searchTask.endDate)  {
-      this.tasks = this.tasks.filter(taskEntry => this.searchTask.endDate >= taskEntry.endDate);
+      this.tasks = this.tasks.filter(taskEntry => this.searchTask.endDate <= taskEntry.endDate);
     }
   }
-
+  assignProject(project: Project) {
+    this.project = project;
+    this.searchTask.project = project.id;
+    this.searchProject=project.id;
+    this.filterTasks();
+   }
 
   onAdd() {
     this.errorMessage='';
@@ -159,7 +207,11 @@ export class TaskManagerComponentComponent implements OnInit {
 
   }
 
+  
+
   open(content) {
+    
+    this.filterProjects();
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {

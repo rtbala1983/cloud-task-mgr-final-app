@@ -5,4 +5,9 @@ export class Project {
   startDate: Date;
   endDate: Date;
   mgrId: string;
+  countOfTasks: string;
+  countOfCompletedTasks: string;
+  constructor() {
+    this.priority = '0';
+   }
 }
