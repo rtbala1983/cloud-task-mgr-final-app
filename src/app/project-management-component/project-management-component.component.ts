@@ -106,13 +106,18 @@ export class ProjectManagementComponentComponent implements OnInit {
 
   onSort(sortColumn: string) {
     if (sortColumn === 'startDate'){
-      this.projects = this.projects.sort((project1, project2) => project1.startDate.getTime() - project2.startDate.getTime());
+      this.projects = this.projects.sort((project1, project2) => (new Date(project1.startDate)).getTime() - (new Date(project2.startDate)).getTime());
 
     } else if (sortColumn === 'endDate') {
-      this.projects = this.projects.sort((project1, project2) => project1.startDate.getTime() - project2.startDate.getTime());
+      this.projects = this.projects.sort((project1, project2) => (new Date(project1.endDate)).getTime() - (new Date(project2.endDate)).getTime());
     } else if (sortColumn === 'priority') {
       this.projects = this.projects.sort((project1, project2) => project1.priority.localeCompare(project2.priority));
     }
+  }
+
+  setDate(){
+    this.project.startDate=new Date().toISOString().slice(0,16);
+    this.project.endDate=new Date(new Date().getTime()+24*1000*60*60).toISOString().slice(0,16);
   }
 
   onAdd() {

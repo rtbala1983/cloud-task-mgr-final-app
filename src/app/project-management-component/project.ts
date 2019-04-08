@@ -2,8 +2,8 @@ export class Project {
   id: string;
   project: string;
   priority: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   mgrId: string;
   countOfTasks: string;
   countOfCompletedTasks: string;

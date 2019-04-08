@@ -18,7 +18,7 @@
         <!--    <div class=col-2></div>-->
                 <label class="col-sm-2 form-control-label" for="dateFlag">Set start and end date</label>
                 <div>
-                    <input type="checkbox" class="form-check-input" id="dateFlag">
+                    <input type="checkbox" class="form-check-input" id="dateFlag" (click)="setDate()"/>
                 </div>
                 <div class="col-md-3">
                     <input type="datetime-local" id="startDate" name="startDate" [(ngModel)]="project.startDate" class="form-control">
