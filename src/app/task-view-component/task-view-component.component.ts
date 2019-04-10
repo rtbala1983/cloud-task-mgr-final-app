@@ -69,7 +69,7 @@ export class TaskViewComponentComponent implements OnInit {
       switchMap(params => {
         // (+) before `params.get()` turns the string into a number
         this.taskName = params.get('id');
-        console.log('task ' + this.taskName)
+        
         return this.taskHandlerService.getTask(this.taskName);
       })
     ).subscribe(selectedTask => {this.task = selectedTask; if (this.task) {this.saveButton = 'Update'} else {this.task=new Task();}});
@@ -128,7 +128,7 @@ export class TaskViewComponentComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('on submit');
+    
     this.errorMessage = '';
     if (this.saveButton === 'Add Task')
     {

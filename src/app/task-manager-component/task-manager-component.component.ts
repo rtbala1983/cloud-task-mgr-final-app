@@ -78,7 +78,7 @@ export class TaskManagerComponentComponent implements OnInit {
 
   postFilterProject(projectList: Array<Project>){
     this.projects = projectList;
-    console.log('search project' + this.searchProject +projectList[0].id);
+    
     this.projects = this.projects.filter(project => this.searchProject !== project.id)
                  
   }
@@ -131,7 +131,7 @@ export class TaskManagerComponentComponent implements OnInit {
   }
 
   onSort(sortColumn: string) {
-    console.log('sort invoked'+ this.tasks.length);
+    
     
     if (sortColumn === 'startDate'){
       this.tasks = this.tasks.sort((task1, task2) => (new Date(task1.startDate)).getTime() - (new Date(task2.startDate)).getTime());
