@@ -10,6 +10,7 @@ const routes: Routes = [{
   path: 'add-task', component: TaskViewComponentComponent },
   { path: 'add-project', component: ProjectManagementComponentComponent },
   { path: 'add-task/:id', component: TaskViewComponentComponent },
+  { path: '', component: TaskManagerComponentComponent },
   { path: 'view-task', component: TaskManagerComponentComponent },
   { path: 'add-user', component: UserManagementComponentComponent }
 ];

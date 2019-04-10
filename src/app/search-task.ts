@@ -5,6 +5,6 @@ export class SearchTask {
   startpriority: string;
   endpriority: string;
   parentTask: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
 }
