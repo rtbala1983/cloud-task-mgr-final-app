@@ -10,13 +10,16 @@ import { UserManagementComponentComponent } from './user-management-component/us
 import { TaskViewComponentComponent } from './task-view-component/task-view-component.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { ProjectManagementComponentComponent } from './project-management-component/project-management-component.component';
+import { EnvServiceProvider } from './env.service.provider';
 @NgModule({
   declarations: [
+     
     AppComponent,
     TaskManagerComponentComponent,
     UserManagementComponentComponent,
     TaskViewComponentComponent,
     ProjectManagementComponentComponent
+    
   ],
   imports: [
     BrowserModule,
@@ -25,9 +28,10 @@ import { ProjectManagementComponentComponent } from './project-management-compon
     HttpClientModule,
     ReactiveFormsModule,
     Ng5SliderModule,
-    NgbModule
+    NgbModule,
+    
   ],
-  providers: [],
+  providers: [EnvServiceProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

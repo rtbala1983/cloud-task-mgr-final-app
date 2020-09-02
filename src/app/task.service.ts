@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { Task } from './task-manager-component/task';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { EnvService } from './env.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private env: EnvService) { }
 
   getAllTasks(): Observable<Array<Task>> {
    // const params = new HttpParams()
@@ -29,30 +30,30 @@ export class TaskService {
       endDate: '',
     }
   });
-   return this.http.get<Array<Task>>('http://localhost:8080/task-mgr/taskMgr/listTasks/' , {params: params});
+   return this.http.get<Array<Task>>(this.env.apiUrl+'task-mgr/taskMgr/listTasks/' , {params: params});
   }
 
   getTask(title: string): Observable<Task> {
     const params = new HttpParams()
     .set('id', title);
-    return this.http.get<Task>('http://localhost:8080/task-mgr/taskMgr/viewTask/' + title);
+    return this.http.get<Task>(this.env.apiUrl+'task-mgr/taskMgr/viewTask/' + title);
   }
 
   postTask(task: Task) {
     
-    this.http.post('http://localhost:8080/task-mgr/taskMgr/addTask', task).subscribe();
+    this.http.post(this.env.apiUrl+'task-mgr/taskMgr/addTask', task).subscribe();
   }
 
   updateTask(task: Task) {
     
     const params = new HttpParams()
     .set('id', task.id);
-    this.http.put('http://localhost:8080/task-mgr/taskMgr/updateTask', task).subscribe();
+    this.http.put(this.env.apiUrl+'task-mgr/taskMgr/updateTask', task).subscribe();
   }
 
   deleteTask(title: string) {
     const params = new HttpParams()
     .set('id', title);
-    return this.http.delete('http://localhost:8080/task-mgr/taskMgr/deleteTask/' + title + '').subscribe();
+    return this.http.delete(this.env.apiUrl+'task-mgr/taskMgr/deleteTask/' + title + '').subscribe();
   }
 }
